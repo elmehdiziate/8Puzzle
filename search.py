@@ -187,6 +187,26 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+def H1(state, problem):
+    state_list = flattern(state)
+    problem_list = flattern(problem.puzzle)
+    count = 0
+    zipped_list = zip(state_list,problem_list)
+    for t in zipped_list:
+        if t[0] != t[1]:
+            count = count + 1
+    print(count)
+    return count
+    
+def flattern(state):
+    cells = state.cells
+    flattern_list = []
+    for row in cells:
+        for n in row:
+            flattern_list.append(n)
+    return flattern_list
+
+  
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
 
