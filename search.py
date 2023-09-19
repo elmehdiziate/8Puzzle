@@ -29,7 +29,7 @@ class SearchProblem:
         """
         Returns the start state for the search problem.
         """
-        util.raiseNotDefined()
+        util.raiseNotDefined() #raise exception if code not implemented
 
     def isGoalState(self, state):
         """
@@ -37,7 +37,7 @@ class SearchProblem:
 
         Returns True if and only if the state is a valid goal state.
         """
-        util.raiseNotDefined()
+        util.raiseNotDefined() 
 
     def getSuccessors(self, state):
         """
@@ -79,7 +79,7 @@ def depthFirstSearch(problem):
     exploredNodes = []
     #define start node
     startState = problem.getStartState()
-    startNode = (startState, [])
+    startNode = (startState, []) 
     
     frontier.push(startNode)
     

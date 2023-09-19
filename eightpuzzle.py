@@ -56,9 +56,9 @@ class EightPuzzleState:
         for row in range( 3 ):
             self.cells.append( [] )
             for col in range( 3 ):
-                self.cells[row].append( numbers.pop() )
-                if self.cells[row][col] == 0:
-                    self.blankLocation = row, col
+                self.cells[row].append( numbers.pop() ) #first append 1
+                if self.cells[row][col] == 0: 
+                    self.blankLocation = row, col 
 
     def isGoal( self ):
         """
@@ -81,7 +81,7 @@ class EightPuzzleState:
         current = 0
         for row in range( 3 ):
             for col in range( 3 ):
-                if current != self.cells[row][col]:
+                if current != self.cells[row][col]: 
                     return False
                 current += 1
         return True
@@ -140,8 +140,8 @@ class EightPuzzleState:
         newPuzzle = EightPuzzleState([0, 0, 0, 0, 0, 0, 0, 0, 0])
         newPuzzle.cells = [values[:] for values in self.cells]
         # And update it to reflect the move
-        newPuzzle.cells[row][col] = self.cells[newrow][newcol]
-        newPuzzle.cells[newrow][newcol] = self.cells[row][col]
+        newPuzzle.cells[row][col] = self.cells[newrow][newcol] # move the number to the blank space, swap
+        newPuzzle.cells[newrow][newcol] = self.cells[row][col] # move the blank space to the number
         newPuzzle.blankLocation = newrow, newcol
 
         return newPuzzle
@@ -162,7 +162,7 @@ class EightPuzzleState:
         return True
 
     def __hash__(self):
-        return hash(str(self.cells))
+        return hash(str(self.cells)) # Hashable so it can be used in a set
 
     def __getAsciiString(self):
         """
