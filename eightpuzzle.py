@@ -14,7 +14,6 @@
 
 import search
 import random
-import csv
 
 # Module Classes
 
@@ -197,7 +196,7 @@ class EightPuzzleSearchProblem(search.SearchProblem):
         self.puzzle = puzzle
 
     def getStartState(self):
-        return puzzle
+        return self.puzzle
 
     def isGoalState(self,state):
         return state.isGoal()
@@ -264,22 +263,25 @@ def createRandomEightPuzzle(moves=100):
     return puzzle
 
 if __name__ == '__main__':
-    puzzle = createRandomEightPuzzle(25)
+    #puzzle = createRandomEightPuzzle(25)
+    puzzle = EightPuzzleState([0,1,2,6,4,5,7,8,3])
     print('A random puzzle:')
     print(puzzle)
 
     problem = EightPuzzleSearchProblem(puzzle)
-    path= search.aStarSearch(problem)    
+    path= search.aStarSearch(problem, search.H4)    
+    print(path)
     """
     path = search.breadthFirstSearch(problem)
-    """   
-    print('A* found a path of %d moves: %s' % (len(path), str(path)))
-    curr = puzzle
-    i = 1
-    for a in path:
-        curr = curr.result(a)
-        print('After %d move%s: %s' % (i, ("", "s")[i>1], a))
-        print(curr)
+    """  
+     
+    #print('A* found a path of %d moves: %s' % (len(path), str(path)))
+    # curr = puzzle
+    # i = 1
+    # for a in path:
+    #     curr = curr.result(a)
+    #     print('After %d move%s: %s' % (i, ("", "s")[i>1], a))
+    #     print(curr)
 
-        input("Press return for the next state...")   # wait for key stroke
-        i += 1
+    #     input("Press return for the next state...")   # wait for key stroke
+    #     i += 1

@@ -17,6 +17,7 @@ In search.py, we implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
+import math
 import util
 
 class SearchProblem:
@@ -141,7 +142,8 @@ def breadthFirstSearch(problem):
 
                     frontier.push(newNode)
 
-    return actions
+    return 
+
         
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -187,21 +189,67 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def H1(state, problem):
-    state_list = flattern(state)
-    problem_list = flattern(problem.puzzle)
+def H4(state, goal_state):
+    outofrows = 0
+    outofcols = 0
+    x = 0
+    for row in state.cells:
+        y = 0
+        for n in row:
+            if n != 0:
+                x1 = int(n/3)
+                y1 = goal_state[x1].index(n)
+                if x1 != x:
+                    outofrows +=1
+                if y1 != y:
+                    outofcols +=1
+            y +=1
+        x +=1
+    return outofcols + outofrows
+
+def H3(state, goal_state):
+  x=0
+  distance = 0
+  for row in state.cells:
+      y=0
+      for n in row:
+          if n != 0:
+            x1 = int(n/3)
+            y1 = goal_state[x1].index(n)
+            distance += util.manhattanDistance((x,y), (x1,y1))
+          y = y+1
+      x = x+1
+  return distance
+
+def H2(state, goal_state):
+    x=0
+    distance = 0
+    for row in state.cells:
+        y=0
+        for n in row:
+            if n != 0:
+                x1 = int(n/3)
+                y1 = goal_state[x1].index(n)
+                distance += math.sqrt((x -x1)**2 + (y - y1)**2)
+            y = y+1
+        x = x+1
+    return distance
+
+def H1(state, goal_state):
+    state_list = flattern(state.cells)
+    problem_list = flattern(goal_state)
+    # print(state_list)
     count = 0
     zipped_list = zip(state_list,problem_list)
     for t in zipped_list:
         if t[0] != t[1]:
             count = count + 1
-    print(count)
+    # print(count)
     return count
     
 def flattern(state):
-    cells = state.cells
     flattern_list = []
-    for row in cells:
+    for row in state:
         for n in row:
             flattern_list.append(n)
     return flattern_list
@@ -209,28 +257,33 @@ def flattern(state):
   
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-
+    goal_state = [[0,1,2],[3,4,5],[6,7,8]]
     #to be explored (FIFO): takes in item, cost+heuristic
     frontier = util.PriorityQueue()
-
+    max_frontier_size = 0
     exploredNodes = [] #holds (state, cost)
+    depth = 0  # Initialize depth
+    expanded_nodes = 0  # Initialize expanded nodes count
+    max_fringe_size = 0  # Initialize max fringe size
 
     startState = problem.getStartState()
     startNode = (startState, [], 0) #(state, action, cost)
-
+    count = 0
     frontier.push(startNode, 0)
 
     while not frontier.isEmpty():
-
+        #max_frontier_size = max(max_frontier_size, frontier.count - count)
         #begin exploring first (lowest-combined (cost+heuristic) ) node on frontier
         currentState, actions, currentCost = frontier.pop()
+        #count+=1
 
         #put popped node into explored list
         currentNode = (currentState, currentCost)
         exploredNodes.append((currentState, currentCost))
-
+        depth = max(depth, len(actions))  # Update depth
+        expanded_nodes += 1  # Increment expanded nodes count
         if problem.isGoalState(currentState):
-            return actions
+            return depth, expanded_nodes, max_fringe_size
 
         else:
             #list of (successor, action, stepCost)
@@ -253,11 +306,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
                 #if this successor not explored, put on frontier and explored list
                 if not already_explored:
-                    frontier.push(newNode, newCost + heuristic(succState, problem))
+                    frontier.push(newNode, newCost + heuristic(succState, goal_state))
                     exploredNodes.append((succState, newCost))
-
-    return actions
-
+                    max_fringe_size = max(max_fringe_size, len(frontier.heap))
+    return depth, expanded_nodes, max_fringe_size
 
 # Abbreviations
 bfs = breadthFirstSearch
