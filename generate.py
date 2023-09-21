@@ -15,7 +15,7 @@ if __name__ == '__main__':
     f = open(filename,'w', newline='')
     writer = csv.writer(f)
     
-    for i in range(100):
+    for i in range(500):
         puzzle = E.createRandomEightPuzzle(25)
         puzzle_list = []
         for i in puzzle.cells:
