@@ -60,6 +60,13 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
+def Branching_factor(depth, num_expandedNodes):
+
+    if (depth == 0):
+        return 'ERROR'
+    b = round(math.pow(num_expandedNodes,(1/depth)),3)
+
+    return b
 
 def tinyMazeSearch(problem):
     """
@@ -78,6 +85,9 @@ def depthFirstSearch(problem):
     frontier = util.Stack()
     #previously explored states (for path checking), holds states
     exploredNodes = []
+    expanded_nodes = 0
+    maxDepth = 0
+    max_Fringe_size = 0
     #define start node
     startState = problem.getStartState()
     startNode = (startState, []) 
@@ -91,9 +101,11 @@ def depthFirstSearch(problem):
         if currentState not in exploredNodes:
             #mark current node as explored
             exploredNodes.append(currentState)
+            expanded_nodes +=1
 
             if problem.isGoalState(currentState):
-                return actions
+
+                return actions, maxDepth, expanded_nodes, max_Fringe_size
             else:
                 #get list of possible successor nodes in 
                 #form (successor, action, stepCost)
@@ -104,8 +116,9 @@ def depthFirstSearch(problem):
                     newAction = actions + [succAction]
                     newNode = (succState, newAction)
                     frontier.push(newNode)
+                    max_Fringe_size = max(max_Fringe_size, len(frontier.list))
 
-    return actions  
+    return actions, maxDepth, expanded_nodes, max_Fringe_size  
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -115,6 +128,9 @@ def breadthFirstSearch(problem):
     
     #previously expanded states (for cycle checking), holds states
     exploredNodes = []
+    depth = 0
+    expanded_nodes = 0
+    max_fringe_size = 0
     
     startState = problem.getStartState()
     startNode = (startState, [], 0) #(state, action, cost)
@@ -124,13 +140,14 @@ def breadthFirstSearch(problem):
     while not frontier.isEmpty():
         #begin exploring first (earliest-pushed) node on frontier
         currentState, actions, currentCost = frontier.pop()
+        depth = max(depth, len(actions))
         
         if currentState not in exploredNodes:
             #put popped node state into explored list
             exploredNodes.append(currentState)
-
+            expanded_nodes += 1
             if problem.isGoalState(currentState):
-                return actions
+                return actions, depth, expanded_nodes, max_fringe_size
             else:
                 #list of (successor, action, stepCost)
                 successors = problem.getSuccessors(currentState)
@@ -141,8 +158,11 @@ def breadthFirstSearch(problem):
                     newNode = (succState, newAction, newCost)
 
                     frontier.push(newNode)
+                    #expanded_nodes = len(exploredNodes)
+                    max_fringe_size = max(max_fringe_size, len(frontier.list))
 
-    return 
+
+    return (), depth, expanded_nodes, max_fringe_size
 
         
 def uniformCostSearch(problem):
@@ -283,7 +303,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         depth = max(depth, len(actions))  # Update depth
         expanded_nodes += 1  # Increment expanded nodes count
         if problem.isGoalState(currentState):
-            return depth, expanded_nodes, max_fringe_size
+            b_factor = Branching_factor(depth, expanded_nodes)
+            return depth, expanded_nodes, max_fringe_size, b_factor
 
         else:
             #list of (successor, action, stepCost)
@@ -309,7 +330,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     frontier.push(newNode, newCost + heuristic(succState, goal_state))
                     exploredNodes.append((succState, newCost))
                     max_fringe_size = max(max_fringe_size, len(frontier.heap))
-    return depth, expanded_nodes, max_fringe_size
+
+                b_factor = Branching_factor(depth, expanded_nodes)    
+    return depth, expanded_nodes, max_fringe_size, b_factor
 
 # Abbreviations
 bfs = breadthFirstSearch

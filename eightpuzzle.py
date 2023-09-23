@@ -263,13 +263,13 @@ def createRandomEightPuzzle(moves=100):
     return puzzle
 
 if __name__ == '__main__':
-    #puzzle = createRandomEightPuzzle(25)
-    puzzle = EightPuzzleState([0,1,2,6,4,5,7,8,3])
+    puzzle = createRandomEightPuzzle(25)
     print('A random puzzle:')
     print(puzzle)
 
     problem = EightPuzzleSearchProblem(puzzle)
-    path= search.aStarSearch(problem, search.H4)    
+    #path= search.aStarSearch(problem, search.H4)
+    path= search.uniformCostSearch(problem)    
     print(path)
     """
     path = search.breadthFirstSearch(problem)
