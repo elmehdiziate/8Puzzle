@@ -73,7 +73,14 @@ if __name__ == '__main__':
     table_4.append(["average depth","average expanded nodes", "average fringe size"])
     table_4.append([average_4[0]/count, average_4[1]/count, average_4[2]/count, round(average_4[3]/count,3)])
     #print(tabulate(table_4,headers=header,tablefmt="github"))
-    
+    l = [("H1",round(average_1[3]/count,3)), ("H2", round(average_2[3]/count,3)), ("H3",  round(average_3[3]/count,3)), ("H4",  round(average_4[3]/count,3))]
+    best_braching = l[0][1]
+    best_heuristic = l[0][0]
+    for t in l:
+        if(t[1]<best_braching):
+            best_braching = t[1]
+            best_heuristic = t[0]
+    print("The best heuristic is:",best_heuristic,"with b*:",best_braching)
     with open("results.csv", mode='w', newline='') as results_file:
         results_writer = csv.writer(results_file)
         
