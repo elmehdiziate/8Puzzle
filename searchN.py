@@ -211,6 +211,8 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+    
+
 def H4(state, goal_state,dimension):
     outofrows = 0
     outofcols = 0

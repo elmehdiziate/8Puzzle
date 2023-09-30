@@ -65,7 +65,7 @@ def Branching_factor(depth, num_expandedNodes):
     if (depth == 0):
         return 'ERROR'
     b = round(math.pow(num_expandedNodes,(1/depth)),3)
-
+    
     return b
 
 def tinyMazeSearch(problem):
@@ -104,8 +104,8 @@ def depthFirstSearch(problem):
             expanded_nodes +=1
 
             if problem.isGoalState(currentState):
-
-                return actions, maxDepth, expanded_nodes, max_Fringe_size
+                
+                return len(actions), len(exploredNodes), max_Fringe_size
             else:
                 #get list of possible successor nodes in 
                 #form (successor, action, stepCost)
@@ -117,8 +117,9 @@ def depthFirstSearch(problem):
                     newNode = (succState, newAction)
                     frontier.push(newNode)
                     max_Fringe_size = max(max_Fringe_size, len(frontier.list))
+                    
 
-    return actions, maxDepth, expanded_nodes, max_Fringe_size  
+    return len(actions), len(expanded_nodes), max_Fringe_size
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -147,7 +148,7 @@ def breadthFirstSearch(problem):
             exploredNodes.append(currentState)
             expanded_nodes += 1
             if problem.isGoalState(currentState):
-                return actions, depth, expanded_nodes, max_fringe_size
+                return depth, expanded_nodes, max_fringe_size
             else:
                 #list of (successor, action, stepCost)
                 successors = problem.getSuccessors(currentState)
@@ -161,8 +162,7 @@ def breadthFirstSearch(problem):
                     #expanded_nodes = len(exploredNodes)
                     max_fringe_size = max(max_fringe_size, len(frontier.list))
 
-
-    return (), depth, expanded_nodes, max_fringe_size
+    return depth, expanded_nodes, max_fringe_size
 
         
 def uniformCostSearch(problem):
@@ -170,10 +170,10 @@ def uniformCostSearch(problem):
 
     #to be explored (FIFO): holds (item, cost)
     frontier = util.PriorityQueue()
-
+    depth = 0
     #previously expanded states (for cycle checking), holds state:cost
     exploredNodes = {}
-    
+    max_fringe_size = 0
     startState = problem.getStartState()
     startNode = (startState, [], 0) #(state, action, cost)
     
@@ -182,13 +182,14 @@ def uniformCostSearch(problem):
     while not frontier.isEmpty():
         #begin exploring first (lowest-cost) node on frontier
         currentState, actions, currentCost = frontier.pop()
-       
+        depth = max(depth, len(actions))
         if (currentState not in exploredNodes) or (currentCost < exploredNodes[currentState]):
             #put popped node's state into explored list
             exploredNodes[currentState] = currentCost
 
             if problem.isGoalState(currentState):
-                return actions
+                
+                return depth, len(exploredNodes), max_fringe_size
             else:
                 #list of (successor, action, stepCost)
                 successors = problem.getSuccessors(currentState)
@@ -197,10 +198,12 @@ def uniformCostSearch(problem):
                     newAction = actions + [succAction]
                     newCost = currentCost + succCost
                     newNode = (succState, newAction, newCost)
-
+                    max_fringe_size = max(max_fringe_size, len(frontier.heap))
                     frontier.update(newNode, newCost)
 
-    return actions
+                
+    
+    return depth, len(exploredNodes), max_fringe_size
 
 def nullHeuristic(state, problem=None):
     """
