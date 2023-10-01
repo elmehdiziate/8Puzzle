@@ -265,13 +265,13 @@ def createRandomEightPuzzle(moves=100):
 
 if __name__ == '__main__':
     # puzzle = createRandomEightPuzzle(25)
-    puzzle = EightPuzzleState([1,0,2,3,4,5,6,7,8])
+    puzzle = EightPuzzleState([4,3,2,0,1,5,6,7,8])
     print('A random puzzle:')
     print(puzzle)
 
     problem = EightPuzzleSearchProblem(puzzle)
     #path= search.aStarSearch(problem, search.H4)
-    path= search.dfs(problem)    
+    path= search.iterativeDeepeningDFS(problem)    
     print(path)
     """
     path = search.breadthFirstSearch(problem)

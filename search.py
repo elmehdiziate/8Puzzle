@@ -121,6 +121,49 @@ def depthFirstSearch(problem):
 
     return len(actions), len(expanded_nodes), max_Fringe_size
 
+def iterativeDeepeningDFS(problem):
+    max_depth = 0
+    expanded_nodes = 0
+    max_fringe_size = 0
+    
+    while True:
+        result, nodes_expanded, fringe_size = depthLimitedSearch(problem, max_depth)
+        expanded_nodes += nodes_expanded
+        max_fringe_size = max(max_fringe_size, fringe_size)
+        
+        if result == "cutoff":
+            max_depth += 1
+        elif result != "failure":
+            return max_depth, expanded_nodes, max_fringe_size
+        else:
+            return None
+
+def depthLimitedSearch(problem, limit):
+    return recursiveDLS(problem.getStartState(), problem, limit, 0)
+
+def recursiveDLS(node, problem, limit, depth):
+    if problem.isGoalState(node):
+        return [], 1, 0  # Return the solution, nodes expanded (1), and max fringe size (0)
+    elif depth == limit:
+        return "cutoff", 1, 1  # Here we have a fringe size of 1, as the current node is still in the fringe
+    else:
+        cutoff_occurred = False
+        nodes_expanded = 0
+        max_fringe_size = 0
+        for successor, action, _ in problem.getSuccessors(node):
+            result, nodes, fringe = recursiveDLS(successor, problem, limit, depth + 1)
+            nodes_expanded += nodes
+            max_fringe_size = max(max_fringe_size, fringe + 1)  # +1 for the current node
+            if result == "cutoff":
+                cutoff_occurred = True
+            elif result != "failure":
+                return [action] + result, nodes_expanded, max_fringe_size  # Return the solution and statistics
+        if cutoff_occurred:
+            return "cutoff", nodes_expanded, max_fringe_size
+        else:
+            return "failure", nodes_expanded, max_fringe_size
+
+
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
