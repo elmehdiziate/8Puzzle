@@ -50,6 +50,7 @@ class EightPuzzleState:
         list (a list of lists) 'cells'.
         """
         self.cells = []
+        self.dimension = 3
         numbers = numbers[:] # Make a copy so as not to cause side-effects.
         numbers.reverse()
         for row in range( 3 ):
@@ -126,12 +127,12 @@ class EightPuzzleState:
         elif(move == 'down'):
             newrow = row + 1
             newcol = col
-        elif(move == 'left'):
-            newrow = row
-            newcol = col - 1
         elif(move == 'right'):
             newrow = row
             newcol = col + 1
+        elif(move == 'left'):
+            newrow = row
+            newcol = col - 1
         else:
             raise "Illegal Move"
 
@@ -263,13 +264,14 @@ def createRandomEightPuzzle(moves=100):
     return puzzle
 
 if __name__ == '__main__':
-    #puzzle = createRandomEightPuzzle(25)
-    puzzle = EightPuzzleState([0,1,2,6,4,5,7,8,3])
+    # puzzle = createRandomEightPuzzle(25)
+    puzzle = EightPuzzleState([4,3,2,0,1,5,6,7,8])
     print('A random puzzle:')
     print(puzzle)
 
     problem = EightPuzzleSearchProblem(puzzle)
-    path= search.aStarSearch(problem, search.H4)    
+    #path= search.aStarSearch(problem, search.H4)
+    path= search.iterativeDeepeningDFS(problem)    
     print(path)
     """
     path = search.breadthFirstSearch(problem)

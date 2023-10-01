@@ -2,26 +2,34 @@ import sys
 import csv
 from itertools import permutations
 import eightpuzzle as E
+def getInvCount(arr):
+    inv_count = 0
+    empty_value = 0
+    for i in range(0, 9):
+        for j in range(i + 1, 9):
+            if arr[j] != empty_value and arr[i] != empty_value and arr[i] > arr[j]:
+                inv_count += 1
+    return inv_count
+ 
+     
+
+def isSolvable(puzzle) :   
+    inv_count = getInvCount([j for sub in puzzle for j in sub])
+    return (inv_count % 2 == 0)
 if __name__ == '__main__':
-    # numbers = [0,1,2,3,4,5,6,7,8]
-    # filename = "permutations.csv"
-    # f = open(filename, 'w', newline='')
-    # writer = csv.writer(f)
-    # all_permutaions = permutations(numbers)
-    
-    # for row in all_permutaions:
-    #     writer.writerow(list(row))
     filename = "scenarios.csv"
     f = open(filename,'w', newline='')
     writer = csv.writer(f)
-    
-    for i in range(500):
+    count = 0
+    while count != 1000:
         puzzle = E.createRandomEightPuzzle(25)
-        puzzle_list = []
-        for i in puzzle.cells:
-            for j in i:
-                puzzle_list.append(j)
-        writer.writerow(puzzle_list)            
+        if(isSolvable(puzzle.cells)):
+            puzzle_list = []
+            for i in puzzle.cells:
+                for j in i:
+                    puzzle_list.append(j)
+            writer.writerow(puzzle_list) 
+            count+=1           
     
         
 

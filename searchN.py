@@ -65,7 +65,7 @@ def Branching_factor(depth, num_expandedNodes):
     if (depth == 0):
         return 'ERROR'
     b = round(math.pow(num_expandedNodes,(1/depth)),3)
-    
+
     return b
 
 def tinyMazeSearch(problem):
@@ -104,8 +104,8 @@ def depthFirstSearch(problem):
             expanded_nodes +=1
 
             if problem.isGoalState(currentState):
-                
-                return len(actions), len(exploredNodes), max_Fringe_size
+
+                return actions, maxDepth, expanded_nodes, max_Fringe_size
             else:
                 #get list of possible successor nodes in 
                 #form (successor, action, stepCost)
@@ -117,52 +117,8 @@ def depthFirstSearch(problem):
                     newNode = (succState, newAction)
                     frontier.push(newNode)
                     max_Fringe_size = max(max_Fringe_size, len(frontier.list))
-                    
 
-    return len(actions), len(expanded_nodes), max_Fringe_size
-
-def iterativeDeepeningDFS(problem):
-    max_depth = 0
-    expanded_nodes = 0
-    max_fringe_size = 0
-    
-    while True:
-        result, nodes_expanded, fringe_size = depthLimitedSearch(problem, max_depth)
-        expanded_nodes += nodes_expanded
-        max_fringe_size = max(max_fringe_size, fringe_size)
-        
-        if result == "cutoff":
-            max_depth += 1
-        elif result != "failure":
-            return max_depth, expanded_nodes, max_fringe_size
-        else:
-            return None
-
-def depthLimitedSearch(problem, limit):
-    return recursiveDLS(problem.getStartState(), problem, limit, 0)
-
-def recursiveDLS(node, problem, limit, depth):
-    if problem.isGoalState(node):
-        return [], 1, 0  # Return the solution, nodes expanded (1), and max fringe size (0)
-    elif depth == limit:
-        return "cutoff", 1, 1  # Here we have a fringe size of 1, as the current node is still in the fringe
-    else:
-        cutoff_occurred = False
-        nodes_expanded = 0
-        max_fringe_size = 0
-        for successor, action, _ in problem.getSuccessors(node):
-            result, nodes, fringe = recursiveDLS(successor, problem, limit, depth + 1)
-            nodes_expanded += nodes
-            max_fringe_size = max(max_fringe_size, fringe + 1)  # +1 for the current node
-            if result == "cutoff":
-                cutoff_occurred = True
-            elif result != "failure":
-                return [action] + result, nodes_expanded, max_fringe_size  # Return the solution and statistics
-        if cutoff_occurred:
-            return "cutoff", nodes_expanded, max_fringe_size
-        else:
-            return "failure", nodes_expanded, max_fringe_size
-
+    return actions, maxDepth, expanded_nodes, max_Fringe_size  
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -191,7 +147,8 @@ def breadthFirstSearch(problem):
             exploredNodes.append(currentState)
             expanded_nodes += 1
             if problem.isGoalState(currentState):
-                return depth, expanded_nodes, max_fringe_size
+                # return actions, depth, expanded_nodes, max_fringe_size
+                return actions
             else:
                 #list of (successor, action, stepCost)
                 successors = problem.getSuccessors(currentState)
@@ -205,7 +162,9 @@ def breadthFirstSearch(problem):
                     #expanded_nodes = len(exploredNodes)
                     max_fringe_size = max(max_fringe_size, len(frontier.list))
 
-    return depth, expanded_nodes, max_fringe_size
+
+    # return (), depth, expanded_nodes, max_fringe_size
+    return actions
 
         
 def uniformCostSearch(problem):
@@ -213,10 +172,10 @@ def uniformCostSearch(problem):
 
     #to be explored (FIFO): holds (item, cost)
     frontier = util.PriorityQueue()
-    depth = 0
+
     #previously expanded states (for cycle checking), holds state:cost
     exploredNodes = {}
-    max_fringe_size = 0
+    
     startState = problem.getStartState()
     startNode = (startState, [], 0) #(state, action, cost)
     
@@ -225,14 +184,13 @@ def uniformCostSearch(problem):
     while not frontier.isEmpty():
         #begin exploring first (lowest-cost) node on frontier
         currentState, actions, currentCost = frontier.pop()
-        depth = max(depth, len(actions))
+       
         if (currentState not in exploredNodes) or (currentCost < exploredNodes[currentState]):
             #put popped node's state into explored list
             exploredNodes[currentState] = currentCost
 
             if problem.isGoalState(currentState):
-                
-                return depth, len(exploredNodes), max_fringe_size
+                return actions
             else:
                 #list of (successor, action, stepCost)
                 successors = problem.getSuccessors(currentState)
@@ -241,12 +199,10 @@ def uniformCostSearch(problem):
                     newAction = actions + [succAction]
                     newCost = currentCost + succCost
                     newNode = (succState, newAction, newCost)
-                    max_fringe_size = max(max_fringe_size, len(frontier.heap))
+
                     frontier.update(newNode, newCost)
 
-                
-    
-    return depth, len(exploredNodes), max_fringe_size
+    return actions
 
 def nullHeuristic(state, problem=None):
     """
@@ -255,7 +211,9 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def H4(state, goal_state):
+    
+
+def H4(state, goal_state,dimension):
     outofrows = 0
     outofcols = 0
     x = 0
@@ -263,7 +221,7 @@ def H4(state, goal_state):
         y = 0
         for n in row:
             if n != 0:
-                x1 = int(n/3)
+                x1 = int(n/dimension)
                 y1 = goal_state[x1].index(n)
                 if x1 != x:
                     outofrows +=1
@@ -273,28 +231,28 @@ def H4(state, goal_state):
         x +=1
     return outofcols + outofrows
 
-def H3(state, goal_state):
+def H3(state, goal_state, dimesion):
   x=0
   distance = 0
   for row in state.cells:
       y=0
       for n in row:
           if n != 0:
-            x1 = int(n/3)
+            x1 = int(n/dimesion)
             y1 = goal_state[x1].index(n)
             distance += util.manhattanDistance((x,y), (x1,y1))
           y = y+1
       x = x+1
   return distance
 
-def H2(state, goal_state):
+def H2(state, goal_state, dimension):
     x=0
     distance = 0
     for row in state.cells:
         y=0
         for n in row:
             if n != 0:
-                x1 = int(n/3)
+                x1 = int(n/dimension)
                 y1 = goal_state[x1].index(n)
                 distance += math.sqrt((x -x1)**2 + (y - y1)**2)
             y = y+1
@@ -320,10 +278,20 @@ def flattern(state):
             flattern_list.append(n)
     return flattern_list
 
-  
+
+def generate_goal_state(problem):
+    goal_state = []
+    current = 0
+    for row in range(problem.puzzle.dimension):
+        goal_state.append([])
+        for col in range(problem.puzzle.dimension):
+            goal_state[row].append(current)
+            current += 1
+    return goal_state
+        
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    goal_state = [[0,1,2],[3,4,5],[6,7,8]]
+    goal_state = generate_goal_state(problem)
     #to be explored (FIFO): takes in item, cost+heuristic
     frontier = util.PriorityQueue()
     max_frontier_size = 0
@@ -350,7 +318,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         expanded_nodes += 1  # Increment expanded nodes count
         if problem.isGoalState(currentState):
             b_factor = Branching_factor(depth, expanded_nodes)
-            return depth, expanded_nodes, max_fringe_size, b_factor
+            # return depth, expanded_nodes, max_fringe_size, b_factor
+            return actions
 
         else:
             #list of (successor, action, stepCost)
@@ -373,12 +342,14 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
                 #if this successor not explored, put on frontier and explored list
                 if not already_explored:
-                    frontier.push(newNode, newCost + heuristic(succState, goal_state))
+                    dimension = problem.puzzle.dimension
+                    frontier.push(newNode, newCost + heuristic(succState, goal_state,dimension))
                     exploredNodes.append((succState, newCost))
                     max_fringe_size = max(max_fringe_size, len(frontier.heap))
 
                 b_factor = Branching_factor(depth, expanded_nodes)    
-    return depth, expanded_nodes, max_fringe_size, b_factor
+    # return depth, expanded_nodes, max_fringe_size, b_factor
+    return actions
 
 # Abbreviations
 bfs = breadthFirstSearch
