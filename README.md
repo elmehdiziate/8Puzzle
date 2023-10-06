@@ -18,3 +18,9 @@
 - To run all the heuristics on the file generated: python automateN.py
 - to run the uninformed searches: pyhton automnateN3.py
 
+# Comparing heuristics:
+![image](https://github.com/elmehdiziate/8Puzzle/assets/109172506/0a6edddd-b022-491d-b26b-095e872e456f)
+# Comparing the best heuristic H3 with uninformed searches:
+![image](https://github.com/elmehdiziate/8Puzzle/assets/109172506/fea1c2e0-7009-4413-bbef-05d21cc137d6)
+
+
