@@ -1,21 +1,4 @@
-# search.py
-# ---------
-# Licensing Information:  You are free to use or extend these projects for
-# educational purposes provided that (1) you do not distribute or publish
-# solutions, (2) you retain this notice, and (3) you provide clear
-# attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
-# Attribution Information: The Pacman AI projects were developed at UC Berkeley.
-# The core projects and autograders were primarily created by John DeNero
-# (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and
-# Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
-"""
-In search.py, we implement generic search algorithms which are called by
-Pacman agents (in searchAgents.py).
-"""
+"""/*=====Start Change Task 4=====*/"""
 
 import math
 import util
@@ -105,7 +88,7 @@ def depthFirstSearch(problem):
 
             if problem.isGoalState(currentState):
 
-                return actions, maxDepth, expanded_nodes, max_Fringe_size
+                return maxDepth, expanded_nodes, max_Fringe_size
             else:
                 #get list of possible successor nodes in 
                 #form (successor, action, stepCost)
@@ -118,7 +101,7 @@ def depthFirstSearch(problem):
                     frontier.push(newNode)
                     max_Fringe_size = max(max_Fringe_size, len(frontier.list))
 
-    return actions, maxDepth, expanded_nodes, max_Fringe_size  
+    return maxDepth, expanded_nodes, max_Fringe_size  
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -147,8 +130,7 @@ def breadthFirstSearch(problem):
             exploredNodes.append(currentState)
             expanded_nodes += 1
             if problem.isGoalState(currentState):
-                # return actions, depth, expanded_nodes, max_fringe_size
-                return actions
+                return depth, expanded_nodes, max_fringe_size
             else:
                 #list of (successor, action, stepCost)
                 successors = problem.getSuccessors(currentState)
@@ -159,12 +141,11 @@ def breadthFirstSearch(problem):
                     newNode = (succState, newAction, newCost)
 
                     frontier.push(newNode)
-                    #expanded_nodes = len(exploredNodes)
+                    expanded_nodes = len(exploredNodes)
                     max_fringe_size = max(max_fringe_size, len(frontier.list))
 
 
-    # return (), depth, expanded_nodes, max_fringe_size
-    return actions
+    return depth, expanded_nodes, max_fringe_size
 
         
 def uniformCostSearch(problem):
@@ -172,25 +153,25 @@ def uniformCostSearch(problem):
 
     #to be explored (FIFO): holds (item, cost)
     frontier = util.PriorityQueue()
-
+    depth = 0
     #previously expanded states (for cycle checking), holds state:cost
     exploredNodes = {}
     
     startState = problem.getStartState()
     startNode = (startState, [], 0) #(state, action, cost)
-    
+    max_fringe_size = 0
     frontier.push(startNode, 0)
     
     while not frontier.isEmpty():
         #begin exploring first (lowest-cost) node on frontier
         currentState, actions, currentCost = frontier.pop()
-       
+        depth = max(depth, len(actions))
         if (currentState not in exploredNodes) or (currentCost < exploredNodes[currentState]):
             #put popped node's state into explored list
             exploredNodes[currentState] = currentCost
 
             if problem.isGoalState(currentState):
-                return actions
+                return depth, len(exploredNodes), max_fringe_size
             else:
                 #list of (successor, action, stepCost)
                 successors = problem.getSuccessors(currentState)
@@ -199,10 +180,10 @@ def uniformCostSearch(problem):
                     newAction = actions + [succAction]
                     newCost = currentCost + succCost
                     newNode = (succState, newAction, newCost)
-
+                    max_fringe_size = max(max_fringe_size, len(frontier.heap))
                     frontier.update(newNode, newCost)
 
-    return actions
+    return depth, len(exploredNodes), max_fringe_size
 
 def nullHeuristic(state, problem=None):
     """
@@ -213,7 +194,7 @@ def nullHeuristic(state, problem=None):
 
     
 
-def H4(state, goal_state,dimension):
+def H4(state, goal_state,dimension):#  heuristic 4
     outofrows = 0
     outofcols = 0
     x = 0
@@ -222,7 +203,7 @@ def H4(state, goal_state,dimension):
         for n in row:
             if n != 0:
                 x1 = int(n/dimension)
-                y1 = goal_state[x1].index(n)
+                y1 = goal_state[x1].index(n)#find the index of the number in the goal state
                 if x1 != x:
                     outofrows +=1
                 if y1 != y:
@@ -231,21 +212,21 @@ def H4(state, goal_state,dimension):
         x +=1
     return outofcols + outofrows
 
-def H3(state, goal_state, dimesion):
+def H3(state, goal_state, dimesion):#heuristic 3
   x=0
   distance = 0
   for row in state.cells:
       y=0
       for n in row:
           if n != 0:
-            x1 = int(n/dimesion)
+            x1 = int(n/dimesion)#find the row of the number in the goal state
             y1 = goal_state[x1].index(n)
             distance += util.manhattanDistance((x,y), (x1,y1))
           y = y+1
       x = x+1
   return distance
 
-def H2(state, goal_state, dimension):
+def H2(state, goal_state, dimension):#heuristic 2
     x=0
     distance = 0
     for row in state.cells:
@@ -253,13 +234,13 @@ def H2(state, goal_state, dimension):
         for n in row:
             if n != 0:
                 x1 = int(n/dimension)
-                y1 = goal_state[x1].index(n)
+                y1 = goal_state[x1].index(n)#find the index of the number in the goal state
                 distance += math.sqrt((x -x1)**2 + (y - y1)**2)
             y = y+1
         x = x+1
     return distance
 
-def H1(state, goal_state):
+def H1(state, goal_state, dimesion): #heuristic 1
     state_list = flattern(state.cells)
     problem_list = flattern(goal_state)
     # print(state_list)
@@ -279,7 +260,7 @@ def flattern(state):
     return flattern_list
 
 
-def generate_goal_state(problem):
+def generate_goal_state(problem):#generate goal state for heuristic 
     goal_state = []
     current = 0
     for row in range(problem.puzzle.dimension):
@@ -291,7 +272,7 @@ def generate_goal_state(problem):
         
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    goal_state = generate_goal_state(problem)
+    goal_state = generate_goal_state(problem)#generate goal state
     #to be explored (FIFO): takes in item, cost+heuristic
     frontier = util.PriorityQueue()
     max_frontier_size = 0
@@ -319,7 +300,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if problem.isGoalState(currentState):
             b_factor = Branching_factor(depth, expanded_nodes)
             # return depth, expanded_nodes, max_fringe_size, b_factor
-            return actions
+            return depth, expanded_nodes, max_fringe_size, b_factor
 
         else:
             #list of (successor, action, stepCost)
@@ -349,10 +330,12 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
                 b_factor = Branching_factor(depth, expanded_nodes)    
     # return depth, expanded_nodes, max_fringe_size, b_factor
-    return actions
+    return depth, expanded_nodes, max_fringe_size, b_factor
 
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+"""/*=====End Change Task 4=====*/"""
+

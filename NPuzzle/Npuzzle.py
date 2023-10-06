@@ -1,13 +1,14 @@
+"""/*=====Start Change Task 4=====*/"""
 import searchN
 import math
-class NpuzzleState:
+class NpuzzleState: #create a class for the puzzle
     
     
-    def __init__( self, numbers ):
+    def __init__( self, numbers ):#initialize the puzzle
         
 
         self.cells = []
-        self.dimension = int(math.sqrt(len(numbers)))
+        self.dimension = int(math.sqrt(len(numbers))) #get the dimension of the puzzle
         numbers = numbers[:] # Make a copy so as not to cause side-effects.
         numbers.reverse()
         for row in range(self.dimension):
@@ -17,7 +18,7 @@ class NpuzzleState:
                 if self.cells[row][col] == 0:
                     self.blankLocation = row, col
     
-    def isGoal(self):
+    def isGoal(self):#check if the puzzle is in its goal state
         
         current = 0
         for row in range(self.dimension):
@@ -27,7 +28,7 @@ class NpuzzleState:
                 current +=1
         return True
     
-    def legalMoves(self):
+    def legalMoves(self):#return the legal moves of the puzzle
         moves = []
         row, col = self.blankLocation
         if(row != 0):
@@ -40,7 +41,7 @@ class NpuzzleState:
             moves.append('right')
         return moves
     
-    def result(self, move):
+    def result(self, move):#return the result of the move
         row, col = self.blankLocation
         if(move == 'up'):
             newrow = row - 1
@@ -69,7 +70,7 @@ class NpuzzleState:
         return newPuzzle
     
     
-    def __eq__(self, other):
+    def __eq__(self, other):#check if two puzzles are equal
         for row in range(self.dimension):
             if self.cells[row] != other.cells[row]:
                 return False
@@ -78,7 +79,7 @@ class NpuzzleState:
     def __hash__(self):
         return hash(str(self.cells)) # Hashable so it can be used in a set
     
-    def __getAsciiString(self):
+    def __getAsciiString(self):#return the puzzle as a string
         """
         Returns a display string for the maze with specified dimension n x n
         """
@@ -110,13 +111,7 @@ class NpuzzleState:
         return self.__getAsciiString()
 
 class NPuzzleSearchProblem(searchN.SearchProblem):
-    """
-      Implementation of a SearchProblem for the  Eight Puzzle domain
-
-      Each state is represented by an instance of an eightPuzzle.
-    """
-    def __init__(self,puzzle):
-        "Creates a new EightPuzzleSearchProblem which stores search information."
+    def __init__(self,puzzle): #initialize the problem
         self.puzzle = puzzle
 
     def getStartState(self):
@@ -125,18 +120,13 @@ class NPuzzleSearchProblem(searchN.SearchProblem):
     def isGoalState(self,state):
         return state.isGoal()
 
-    def getSuccessors(self,state):
-        """
-          Returns list of (successor, action, stepCost) pairs where
-          each succesor is either left, right, up, or down
-          from the original state and the cost is 1.0 for each
-        """
+    def getSuccessors(self,state):#return the successors of the puzzle state with the cost of 1 for each move
         succ = []
         for a in state.legalMoves():
             succ.append((state.result(a), a, 1))
         return succ
 
-    def getCostOfActions(self, actions):
+    def getCostOfActions(self, actions):#return the cost of the actions taken in the puzzle
         """
          actions: A list of actions to take
 
@@ -162,3 +152,4 @@ if __name__ == '__main__':
     #path= search.aStarSearch(problem, search.H4)
     path= searchN.astar(problem, searchN.H3)    
     print(path)
+"""/*=====End Change Task 4=====*/"""

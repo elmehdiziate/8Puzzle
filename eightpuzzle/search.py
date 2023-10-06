@@ -80,7 +80,8 @@ def tinyMazeSearch(problem):
 
 def depthFirstSearch(problem):
     """Search the deepest nodes in the search tree first."""
-
+    """/*=====Start Change Task 3=====*/"""
+    limit = 1000
     #states to be explored (LIFO). holds nodes in form (state, action)
     frontier = util.Stack()
     #previously explored states (for path checking), holds states
@@ -88,6 +89,7 @@ def depthFirstSearch(problem):
     expanded_nodes = 0
     maxDepth = 0
     max_Fringe_size = 0
+    """/*=====End Change Task 3=====*/"""
     #define start node
     startState = problem.getStartState()
     startNode = (startState, []) 
@@ -101,8 +103,11 @@ def depthFirstSearch(problem):
         if currentState not in exploredNodes:
             #mark current node as explored
             exploredNodes.append(currentState)
+            """/*=====Start Change Task 3=====*/"""
             expanded_nodes +=1
-
+            """/*=====End Change Task 3=====*/"""
+            if len(actions) > limit: #if depth limit reached
+                return None
             if problem.isGoalState(currentState):
                 
                 return len(actions), len(exploredNodes), max_Fringe_size
@@ -116,11 +121,14 @@ def depthFirstSearch(problem):
                     newAction = actions + [succAction]
                     newNode = (succState, newAction)
                     frontier.push(newNode)
+                    """/*=====Start Change Task 3=====*/"""
                     max_Fringe_size = max(max_Fringe_size, len(frontier.list))
+                    """/*=====Start Change Task 3=====*/"""
+
                     
 
     return len(actions), len(expanded_nodes), max_Fringe_size
-
+"""/*=====Start Change Task 3=====*/"""
 def iterativeDeepeningDFS(problem):
     max_depth = 0
     expanded_nodes = 0
@@ -163,7 +171,7 @@ def recursiveDLS(node, problem, limit, depth):
         else:
             return "failure", nodes_expanded, max_fringe_size
 
-
+"""/*=====End Change Task 3=====*/"""
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
@@ -172,10 +180,11 @@ def breadthFirstSearch(problem):
     
     #previously expanded states (for cycle checking), holds states
     exploredNodes = []
+    """/*=====Start Change Task 3=====*/"""
     depth = 0
     expanded_nodes = 0
     max_fringe_size = 0
-    
+    """/*=====Start Change Task 3=====*/"""
     startState = problem.getStartState()
     startNode = (startState, [], 0) #(state, action, cost)
     
@@ -189,7 +198,9 @@ def breadthFirstSearch(problem):
         if currentState not in exploredNodes:
             #put popped node state into explored list
             exploredNodes.append(currentState)
+            """/*=====Start Change Task 3=====*/"""
             expanded_nodes += 1
+            """/*=====End Change Task 3=====*/"""
             if problem.isGoalState(currentState):
                 return depth, expanded_nodes, max_fringe_size
             else:
@@ -202,8 +213,10 @@ def breadthFirstSearch(problem):
                     newNode = (succState, newAction, newCost)
 
                     frontier.push(newNode)
-                    #expanded_nodes = len(exploredNodes)
+                    """/*=====Start Change Task 3=====*/"""
                     max_fringe_size = max(max_fringe_size, len(frontier.list))
+                    """/*=====Start Change Task 3=====*/"""
+
 
     return depth, expanded_nodes, max_fringe_size
 
@@ -213,10 +226,12 @@ def uniformCostSearch(problem):
 
     #to be explored (FIFO): holds (item, cost)
     frontier = util.PriorityQueue()
+    """/*=====Start Change Task 3=====*/"""
     depth = 0
     #previously expanded states (for cycle checking), holds state:cost
     exploredNodes = {}
     max_fringe_size = 0
+    """/*=====End Change Task 3=====*/"""
     startState = problem.getStartState()
     startNode = (startState, [], 0) #(state, action, cost)
     
@@ -225,7 +240,9 @@ def uniformCostSearch(problem):
     while not frontier.isEmpty():
         #begin exploring first (lowest-cost) node on frontier
         currentState, actions, currentCost = frontier.pop()
+        """/*=====Start Change Task 3=====*/"""
         depth = max(depth, len(actions))
+        """/*=====End Change Task 3=====*/"""
         if (currentState not in exploredNodes) or (currentCost < exploredNodes[currentState]):
             #put popped node's state into explored list
             exploredNodes[currentState] = currentCost
@@ -241,7 +258,9 @@ def uniformCostSearch(problem):
                     newAction = actions + [succAction]
                     newCost = currentCost + succCost
                     newNode = (succState, newAction, newCost)
+                    """/*=====Start Change Task 3=====*/"""
                     max_fringe_size = max(max_fringe_size, len(frontier.heap))
+                    """/*=====End Change Task 3=====*/"""
                     frontier.update(newNode, newCost)
 
                 
@@ -254,8 +273,26 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+"""/*=====Start Change Task 1=====*/"""
+def H5(state, goal_state): # calculate manhattan distance + blank tile move penalty nilsson
+    board = state.cells
+    n = len(state.cells)
+    score = 0
 
-def H4(state, goal_state):
+    for i in range(n):
+        for j in range(n):
+            if board[i][j] == 0: 
+                continue
+            goal_value = i * n + j + 1 
+            if board[i][j] != goal_value:
+                if board[i][j] != 0:  
+                    dx = abs((board[i][j] - 1) % n - j)
+                    dy = abs((board[i][j] - 1) // n - i)
+                    score += dx + dy  # Manhattan distance
+                else: 
+                    score += 2  # blank tile move penalty
+    return score
+def H4(state, goal_state): # calculate number of rows and columns out of place
     outofrows = 0
     outofcols = 0
     x = 0
@@ -273,7 +310,7 @@ def H4(state, goal_state):
         x +=1
     return outofcols + outofrows
 
-def H3(state, goal_state):
+def H3(state, goal_state): # calculate manhattan distance
   x=0
   distance = 0
   for row in state.cells:
@@ -287,7 +324,7 @@ def H3(state, goal_state):
       x = x+1
   return distance
 
-def H2(state, goal_state):
+def H2(state, goal_state): # calculate euclidean distance
     x=0
     distance = 0
     for row in state.cells:
@@ -301,56 +338,55 @@ def H2(state, goal_state):
         x = x+1
     return distance
 
-def H1(state, goal_state):
+def H1(state, goal_state): # calculate number of misplaced tiles
     state_list = flattern(state.cells)
     problem_list = flattern(goal_state)
-    # print(state_list)
-    count = 0
+    count = -1
     zipped_list = zip(state_list,problem_list)
     for t in zipped_list:
         if t[0] != t[1]:
             count = count + 1
-    # print(count)
     return count
     
-def flattern(state):
+def flattern(state): #flatterns 2d list into 1d list
     flattern_list = []
     for row in state:
         for n in row:
             flattern_list.append(n)
     return flattern_list
+"""/*=====End Change Task 1=====*/"""
 
   
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    goal_state = [[0,1,2],[3,4,5],[6,7,8]]
+    """/*=====Start Change Task 1=====*/"""
+    goal_state = [[0,1,2],[3,4,5],[6,7,8]] #goal state
+    """/*=====End Change Task 1=====*/"""
     #to be explored (FIFO): takes in item, cost+heuristic
-    frontier = util.PriorityQueue()
-    max_frontier_size = 0
+    """/*=====Start Change Task 2=====*/"""
+    frontier = util.PriorityQueue() #holds (state, action, cost)
+    max_frontier_size = 0 #holds max frontier size
     exploredNodes = [] #holds (state, cost)
     depth = 0  # Initialize depth
     expanded_nodes = 0  # Initialize expanded nodes count
     max_fringe_size = 0  # Initialize max fringe size
-
+    """/*=====End Change Task 2=====*/"""
     startState = problem.getStartState()
     startNode = (startState, [], 0) #(state, action, cost)
-    count = 0
-    frontier.push(startNode, 0)
+    count = 0 #count number of nodes popped from frontier
+    frontier.push(startNode, 0) #push start node to frontier
 
     while not frontier.isEmpty():
-        #max_frontier_size = max(max_frontier_size, frontier.count - count)
         #begin exploring first (lowest-combined (cost+heuristic) ) node on frontier
         currentState, actions, currentCost = frontier.pop()
-        #count+=1
-
         #put popped node into explored list
-        currentNode = (currentState, currentCost)
-        exploredNodes.append((currentState, currentCost))
+        currentNode = (currentState, currentCost) #holds (state, cost)
+        exploredNodes.append((currentState, currentCost)) 
         depth = max(depth, len(actions))  # Update depth
         expanded_nodes += 1  # Increment expanded nodes count
         if problem.isGoalState(currentState):
-            b_factor = Branching_factor(depth, expanded_nodes)
-            return depth, expanded_nodes, max_fringe_size, b_factor
+            b_factor = Branching_factor(depth, expanded_nodes) #calculate branching factor
+            return depth, expanded_nodes, max_fringe_size, b_factor #return depth, expanded nodes, max fringe size, and branching factor
 
         else:
             #list of (successor, action, stepCost)
@@ -375,9 +411,12 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 if not already_explored:
                     frontier.push(newNode, newCost + heuristic(succState, goal_state))
                     exploredNodes.append((succState, newCost))
+                    """/*=====Start Change Task 2=====*/"""
                     max_fringe_size = max(max_fringe_size, len(frontier.heap))
-
-                b_factor = Branching_factor(depth, expanded_nodes)    
+                    """/*=====End Change Task 2=====*/"""
+                """/*=====Start Change Task 2=====*/"""
+                b_factor = Branching_factor(depth, expanded_nodes) #calculate branching factor 
+                """/*=====End Change Task 2=====*/"""  
     return depth, expanded_nodes, max_fringe_size, b_factor
 
 # Abbreviations
